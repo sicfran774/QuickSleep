@@ -45,6 +45,10 @@ public final class QuickSleep extends JavaPlugin implements Listener {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
+        //bstats metrics
+        int pluginId = 25667;
+        Metrics metrics = new Metrics(this, pluginId);
+
         Bukkit.getPluginManager().registerEvents(this, this);
 
         // Commands
