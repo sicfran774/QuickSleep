@@ -12,7 +12,7 @@
  *
  * Violations will result in a ban of your plugin and account from bStats.
  */
-package io.sicfran.quickSleep;
+package io.sicfran.quickSleep.tools;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
