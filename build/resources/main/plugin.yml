@@ -1,0 +1,4 @@
+name: QuickSleep
+version: '1.0-SNAPSHOT'
+main: io.sicfran.quickSleep.QuickSleep
+api-version: '1.21'
