@@ -1,11 +1,8 @@
 package io.sicfran.quickSleep.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
 import io.sicfran.quickSleep.QuickSleep;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;
@@ -15,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -23,32 +19,15 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.TextColor.color;
 
 @SuppressWarnings("UnstableApiUsage")
-public class BedCommand {
+public class SleepCommand {
 
     private final QuickSleep plugin;
 
-    public BedCommand(QuickSleep plugin){
+    public SleepCommand(QuickSleep plugin){
         this.plugin = plugin;
     }
 
-    public LiteralArgumentBuilder<CommandSourceStack> createCommand(){
-        return Commands.literal("sleep")
-            .then(Commands.literal("confirm") // /sleep confirm
-                    .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.CONFIRM))
-                    .executes(this::sleepConfirm)
-            )
-            .then(Commands.literal("cancel") // /sleep cancel
-                    .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.CANCEL))
-                    .executes(this::sleepCancel)
-            ).then(Commands.literal("timer")
-                    .then(Commands.argument("seconds", IntegerArgumentType.integer(5,15))
-                            .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.TIMER))
-                            .executes(this::sleepTimer)
-                    )
-            );
-    }
-
-    private int sleepConfirm(@NotNull CommandContext<CommandSourceStack> ctx){
+    protected int sleepConfirm(@NotNull CommandContext<CommandSourceStack> ctx){
         CommandSender sender = ctx.getSource().getSender();
         Entity executor = ctx.getSource().getExecutor();
 
@@ -59,8 +38,8 @@ public class BedCommand {
             sender.sendPlainMessage("You can only use this command as a player.");
         } else {
             plugin.getServer().broadcast(text()
-                            .append(text(sender.getName(), color(0x00FFFF)))
-                            .append(text(" has begun to sleep!")).build()
+                    .append(text(sender.getName(), color(0x00FFFF)))
+                    .append(text(" has begun to sleep!")).build()
             );
             final Component message =  text()
                     .append(text("You have "))
@@ -76,7 +55,7 @@ public class BedCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    public int sleepCancel(@NotNull CommandContext<CommandSourceStack> ctx){
+    protected int sleepCancel(@NotNull CommandContext<CommandSourceStack> ctx){
         CommandSender sender = ctx.getSource().getSender();
         Entity executor = ctx.getSource().getExecutor();
 
@@ -102,7 +81,7 @@ public class BedCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    public int sleepTimer(@NotNull CommandContext<CommandSourceStack> ctx){
+    protected int sleepTimer(@NotNull CommandContext<CommandSourceStack> ctx){
         CommandSender sender = ctx.getSource().getSender();
 
         int seconds = ctx.getArgument("seconds", int.class);

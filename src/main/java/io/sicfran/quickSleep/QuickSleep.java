@@ -2,6 +2,7 @@
 package io.sicfran.quickSleep;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import io.sicfran.quickSleep.data.PlayerDataManager;
 import io.sicfran.quickSleep.listeners.OnPlayerBedEnter;
 import io.sicfran.quickSleep.listeners.OnPlayerBedLeave;
 import io.sicfran.quickSleep.tools.Metrics;
@@ -9,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
 
-import io.sicfran.quickSleep.commands.BedCommand;
+import io.sicfran.quickSleep.commands.CommandTree;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,13 +20,16 @@ public final class QuickSleep extends JavaPlugin implements Listener {
 
     public static final String VERSION = "1.1";
 
+    private final PlayerDataManager playerData;
     private final Set<UUID> sleepingPlayers;
     private boolean sleepTimerStarted;
 
     public QuickSleep(){
         super();
-        this.sleepingPlayers = new HashSet<>();
-        this.sleepTimerStarted = false;
+
+        playerData = new PlayerDataManager(this, this.getDataFolder());
+        sleepingPlayers = new HashSet<>();
+        sleepTimerStarted = false;
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -33,7 +37,7 @@ public final class QuickSleep extends JavaPlugin implements Listener {
     public void onEnable() {
         //get config and initialize saved data
         saveDefaultConfig();
-        initializeSaveData();
+
 
         //initialize bstats metrics
         int pluginId = 25667;
@@ -45,7 +49,7 @@ public final class QuickSleep extends JavaPlugin implements Listener {
         //register commands
         this.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS, commands ->
-                        commands.registrar().register(new BedCommand(this).createCommand().build()));
+                        commands.registrar().register(new CommandTree(this).createCommand().build()));
 
         //successful
         getLogger().info("QuickSleep " + VERSION + " successfully loaded!");
@@ -54,10 +58,6 @@ public final class QuickSleep extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         getLogger().info("QuickSleep " + VERSION + " has been disabled.");
-    }
-
-    private void initializeSaveData(){
-
     }
 
     private void registerListeners(){
@@ -89,4 +89,7 @@ public final class QuickSleep extends JavaPlugin implements Listener {
         this.sleepTimerStarted = sleepTimerStarted;
     }
 
+    public PlayerDataManager getPlayerData() {
+        return playerData;
+    }
 }
