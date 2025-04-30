@@ -2,7 +2,9 @@ package io.sicfran.quickSleep.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import io.sicfran.quickSleep.QuickSleep;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -26,7 +28,8 @@ public class MessageCommand {
         Player targetPlayer;
 
         try {
-            targetPlayer = ctx.getArgument("player", Player.class);
+            final PlayerSelectorArgumentResolver resolver = ctx.getArgument("player", PlayerSelectorArgumentResolver.class);
+            targetPlayer = resolver.resolve(ctx.getSource()).getFirst();
         } catch (IllegalArgumentException e) {
             if (executor instanceof Player) {
                 targetPlayer = (Player) executor;
@@ -34,6 +37,8 @@ public class MessageCommand {
                 sender.sendPlainMessage("You must be a player or specify one.");
                 return Command.SINGLE_SUCCESS;
             }
+        } catch (CommandSyntaxException e) {
+            throw new RuntimeException(e);
         }
 
         switch (messageType){

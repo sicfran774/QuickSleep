@@ -49,9 +49,8 @@ public class CommandTree {
                                                 messageCommand.changeMessage(ctx, "Cancel"))
                                 )
                         )
-
-                        .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_ALL))
                         .then(Commands.argument("player", ArgumentTypes.player()) // sleep message {player}
+                                .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_ALL))
                                 .then(Commands.literal("wakeup") // sleep message {player} wakeup
                                         .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message {player} wakeup {message}
                                                 .executes(ctx ->
