@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -51,17 +52,20 @@ public class BedCommand {
         CommandSender sender = ctx.getSource().getSender();
         Entity executor = ctx.getSource().getExecutor();
 
-
-
         if(plugin.getSleepingPlayers().isEmpty()){
             sender.sendPlainMessage("You must be in a bed to use this command.");
 
         } else if(!(executor instanceof Player)){
             sender.sendPlainMessage("You can only use this command as a player.");
         } else {
-            final Component message = text()
-                    .append(text(sender.getName(), color(0x00FFFF)))
-                    .append(text(" has begun to sleep! Type "))
+            plugin.getServer().broadcast(text()
+                            .append(text(sender.getName(), color(0x00FFFF)))
+                            .append(text(" has begun to sleep!")).build()
+            );
+            final Component message =  text()
+                    .append(text("You have "))
+                    .append(text(plugin.getConfig().getInt("quick_sleep.timer", 10), color(0x32a852)))
+                    .append(text(" seconds to type "))
                     .append(text("/sleep cancel", color(0xE63E44)))
                     .append(text(" to keep it from becoming daytime."))
                     .build();
@@ -102,7 +106,7 @@ public class BedCommand {
         CommandSender sender = ctx.getSource().getSender();
 
         int seconds = ctx.getArgument("seconds", int.class);
-        plugin.setTimerLength(seconds);
+        plugin.getConfig().set("quick_sleep.timer", seconds);
         sender.sendPlainMessage("Sleep timer changed to " + seconds + " seconds.");
 
         return Command.SINGLE_SUCCESS;
@@ -111,7 +115,7 @@ public class BedCommand {
     private void startSleep(World world) {
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-        final int[] seconds = {plugin.getTimerLength()};
+        final int[] seconds = {plugin.getConfig().getInt("quick_sleep.timer", 10)};
         plugin.setSleepTimerStarted(true);
 
         scheduler.runTaskTimer(plugin, task -> {
@@ -121,10 +125,10 @@ public class BedCommand {
                 task.cancel();
             } else if (!plugin.isSleepTimerStarted()){
                 task.cancel();
-            } else {
+            } else if (seconds[0] <= 3){
                 plugin.getServer().broadcast(text(seconds[0] + "..."));
-                seconds[0]--;
             }
+            seconds[0]--;
         }, 0, 20);
     }
 

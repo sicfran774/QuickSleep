@@ -2,3 +2,13 @@ name: QuickSleep
 version: '1.1'
 main: io.sicfran.quickSleep.QuickSleep
 api-version: '1.21'
+permissions:
+  sleep.confirm:
+    description: Confirm starting the night skip countdown
+    default: true
+  sleep.cancel:
+    description: Cancel an existing night skip countdown
+    default: true
+  sleep.timer:
+    description: Change the time it takes to countdown
+    default: op

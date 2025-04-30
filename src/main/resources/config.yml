@@ -1,0 +1,3 @@
+quick_sleep:
+  # Default timer for countdown (in seconds)
+  timer: 10

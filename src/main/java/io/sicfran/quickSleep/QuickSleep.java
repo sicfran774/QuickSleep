@@ -21,18 +21,20 @@ public final class QuickSleep extends JavaPlugin implements Listener {
 
     private final Set<UUID> sleepingPlayers;
     private boolean sleepTimerStarted;
-    private int timerLength;
 
     public QuickSleep(){
         super();
         this.sleepingPlayers = new HashSet<>();
         this.sleepTimerStarted = false;
-        this.timerLength = 10;
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
+        //get config and initialize saved data
+        saveDefaultConfig();
+        initializeSaveData();
+
         //initialize bstats metrics
         int pluginId = 25667;
         new Metrics(this, pluginId);
@@ -52,6 +54,10 @@ public final class QuickSleep extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         getLogger().info("QuickSleep " + VERSION + " has been disabled.");
+    }
+
+    private void initializeSaveData(){
+
     }
 
     private void registerListeners(){
@@ -83,11 +89,4 @@ public final class QuickSleep extends JavaPlugin implements Listener {
         this.sleepTimerStarted = sleepTimerStarted;
     }
 
-    public int getTimerLength() {
-        return timerLength;
-    }
-
-    public void setTimerLength(int timerLength) {
-        this.timerLength = timerLength;
-    }
 }
