@@ -20,27 +20,48 @@ public class CommandTree {
     }
 
     public LiteralArgumentBuilder<CommandSourceStack> createCommand(){
-        return Commands.literal("sleep")
-                .then(Commands.literal("confirm") // /sleep confirm
+        return Commands.literal("sleep") // sleep
+                .then(Commands.literal("confirm") // sleep confirm
                     .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.CONFIRM))
                     .executes(sleepCommand::sleepConfirm)
                 )
-                .then(Commands.literal("cancel") // /sleep cancel
+                .then(Commands.literal("cancel") // sleep cancel
                     .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.CANCEL))
                     .executes(sleepCommand::sleepCancel)
                 ).then(Commands.literal("timer")
-                        .then(Commands.argument("seconds", IntegerArgumentType.integer(5,15))
+                        .then(Commands.argument("seconds", IntegerArgumentType.integer(3,60))
                             .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.TIMER))
                             .executes(sleepCommand::sleepTimer)
                         )
                 )
-                .then(Commands.literal("message")
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
-                                .executes(messageCommand::changeWakeupMessage)
+                .then(Commands.literal("message") // sleep message
+                        .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_SELF))
+                        .then(Commands.literal("wakeup") // sleep message wakeup
+                                .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message wakeup {message}
+                                        .executes(ctx ->
+                                                messageCommand.changeMessage(ctx, "Wake up"))
+                                )
                         )
-                        .then(Commands.argument("player", ArgumentTypes.player())
-                                .then(Commands.argument("message", StringArgumentType.greedyString())
-                                        .executes(messageCommand::changeWakeupMessage)
+                        .then(Commands.literal("cancel") // sleep message cancel
+                                .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message cancel {message}
+                                        .executes(ctx ->
+                                                messageCommand.changeMessage(ctx, "Cancel"))
+                                )
+                        )
+
+                        .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_ALL))
+                        .then(Commands.argument("player", ArgumentTypes.player()) // sleep message {player}
+                                .then(Commands.literal("wakeup") // sleep message {player} wakeup
+                                        .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message {player} wakeup {message}
+                                                .executes(ctx ->
+                                                        messageCommand.changeMessage(ctx, "Wake up"))
+                                        )
+                                )
+                                .then(Commands.literal("cancel") // sleep message {player} cancel
+                                        .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message {player} cancel {messsage}
+                                                .executes(ctx ->
+                                                        messageCommand.changeMessage(ctx, "Cancel"))
+                                        )
                                 )
                         )
                 );

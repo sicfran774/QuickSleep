@@ -3,6 +3,15 @@ version: '1.1'
 main: io.sicfran.quickSleep.QuickSleep
 api-version: '1.21'
 permissions:
+  sleep.*:
+    description: Gives access to all QuickSleep commands and features
+    default: op
+    children:
+      sleep.confirm: true
+      sleep.cancel: true
+      sleep.timer: true
+      sleep.message_self: true
+      sleep.message_all: true
   sleep.confirm:
     description: Confirm starting the night skip countdown
     default: true
@@ -11,4 +20,10 @@ permissions:
     default: true
   sleep.timer:
     description: Change the time it takes to countdown
+    default: op
+  sleep.message_self:
+    description: Change own messages for wake up and cancel
+    default: true
+  sleep.message_all:
+    description: Allow changing any player's messages
     default: op

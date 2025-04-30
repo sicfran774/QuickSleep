@@ -34,13 +34,21 @@ public class PlayerDataManager {
         this.playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
     }
 
-    public void savePlayerData(UUID playerId, String sleepMessage){
-        playerDataConfig.set("players." + playerId + ".sleepMessage", sleepMessage);
+    public void savePlayerWakeupMsg(UUID playerId, String wakeupMessage){
+        playerDataConfig.set("players." + playerId + ".message.wakeup", wakeupMessage);
         savePlayerDataFile();
     }
 
-    public String loadPlayerData(UUID playerId){
-        return playerDataConfig.getString("players." + playerId + ".sleepMessage", "Good morning!");
+    public void savePlayerCancelMsg(UUID playerId, String cancelMessage){
+        playerDataConfig.set("players." + playerId + ".message.cancel", cancelMessage);
+        savePlayerDataFile();
+    }
+
+    public PlayerData loadPlayerData(UUID playerId){
+        return new PlayerData(
+                playerDataConfig.getString("players." + playerId + ".message.wakeup", "Good morning!"),
+                playerDataConfig.getString("players." + playerId + ".message.cancel", "Boooo!!!!")
+        );
     }
 
     private void savePlayerDataFile() {
@@ -52,4 +60,5 @@ public class PlayerDataManager {
         }
     }
 
+    public record PlayerData(String wakeupMessage, String cancelMessage) { }
 }

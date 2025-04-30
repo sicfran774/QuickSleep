@@ -50,7 +50,7 @@ public class SleepCommand {
                     .build();
             plugin.getServer().broadcast(message);
 
-            this.startSleep(executor.getWorld());
+            this.startSleep(executor.getWorld(), executor.getUniqueId());
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -67,10 +67,18 @@ public class SleepCommand {
             }
             plugin.clearSleepers();
 
+
+            String cancelMessage = "Booooo!!!!!";
+            // Get player data cancel message
+            if(executor instanceof Player player){
+                cancelMessage = plugin.getPlayerData().loadPlayerData(player.getUniqueId()).cancelMessage();
+            }
+
             // Expose the canceller
             final Component message = text()
                     .append(text(sender.getName(), color(0x00FFFF)))
-                    .append(text(" has cancelled the sleep. Boooooo!!! "))
+                    .append(text(" has cancelled the sleep. "))
+                    .append(text(cancelMessage, color(0xd000ff)))
                     .build();
             plugin.getServer().broadcast(message);
         } else if(executor instanceof Player player && plugin.getSleepingPlayers().contains(player.getUniqueId())){
@@ -86,12 +94,13 @@ public class SleepCommand {
 
         int seconds = ctx.getArgument("seconds", int.class);
         plugin.getConfig().set("quick_sleep.timer", seconds);
+        plugin.saveConfig();
         sender.sendPlainMessage("Sleep timer changed to " + seconds + " seconds.");
 
         return Command.SINGLE_SUCCESS;
     }
 
-    private void startSleep(World world) {
+    private void startSleep(World world, UUID playerId) {
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
         final int[] seconds = {plugin.getConfig().getInt("quick_sleep.timer", 10)};
@@ -99,7 +108,7 @@ public class SleepCommand {
 
         scheduler.runTaskTimer(plugin, task -> {
             if (seconds[0] == 0) {
-                executeSleepResets(world);
+                executeSleepResets(world, playerId);
                 plugin.setSleepTimerStarted(false);
                 task.cancel();
             } else if (!plugin.isSleepTimerStarted()){
@@ -111,10 +120,12 @@ public class SleepCommand {
         }, 0, 20);
     }
 
-    private void executeSleepResets(@NotNull World world){
+    private void executeSleepResets(@NotNull World world, UUID playerId){
         world.setTime(0);
         world.setStorm(false);
 
-        plugin.getServer().broadcast(text("Good morning!"));
+        // Load player's wake up message
+        String playerMessage = plugin.getPlayerData().loadPlayerData(playerId).wakeupMessage();
+        plugin.getServer().broadcast(text(playerMessage, color(0xd000ff)));
     }
 }

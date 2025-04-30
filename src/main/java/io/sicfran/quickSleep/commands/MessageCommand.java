@@ -18,7 +18,7 @@ public class MessageCommand {
         this.plugin = plugin;
     }
 
-    public int changeWakeupMessage(@NotNull CommandContext<CommandSourceStack> ctx) {
+    public int changeMessage(@NotNull CommandContext<CommandSourceStack> ctx, String messageType) {
         CommandSender sender = ctx.getSource().getSender();
         Entity executor = ctx.getSource().getExecutor();
         String message = ctx.getArgument("message", String.class);
@@ -36,8 +36,16 @@ public class MessageCommand {
             }
         }
 
-        plugin.getPlayerData().savePlayerData(targetPlayer.getUniqueId(), message);
-        sender.sendPlainMessage("Sleep message successfully changed!");
+        switch (messageType){
+            case "Wake up":
+                plugin.getPlayerData().savePlayerWakeupMsg(targetPlayer.getUniqueId(), message);
+                break;
+            case "Cancel":
+                plugin.getPlayerData().savePlayerCancelMsg(targetPlayer.getUniqueId(), message);
+                break;
+        }
+
+        sender.sendPlainMessage(messageType + " message successfully changed!");
 
         return Command.SINGLE_SUCCESS;
     }
