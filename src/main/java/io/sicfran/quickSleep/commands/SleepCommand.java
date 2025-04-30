@@ -100,6 +100,12 @@ public class SleepCommand {
         return Command.SINGLE_SUCCESS;
     }
 
+    protected int getSleepTimer(@NotNull CommandContext<CommandSourceStack> ctx){
+        CommandSender sender = ctx.getSource().getSender();
+        sender.sendPlainMessage("Timer set to " + plugin.getConfig().getInt("quick_sleep.timer", 10) + " seconds.");
+        return Command.SINGLE_SUCCESS;
+    }
+
     private void startSleep(World world, UUID playerId) {
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
 

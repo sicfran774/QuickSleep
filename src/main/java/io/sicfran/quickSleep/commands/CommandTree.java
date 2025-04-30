@@ -29,6 +29,7 @@ public class CommandTree {
                     .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.CANCEL))
                     .executes(sleepCommand::sleepCancel)
                 ).then(Commands.literal("timer")
+                        .executes(sleepCommand::getSleepTimer)
                         .then(Commands.argument("seconds", IntegerArgumentType.integer(3,60))
                             .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.TIMER))
                             .executes(sleepCommand::sleepTimer)
