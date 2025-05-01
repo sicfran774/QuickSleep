@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.sicfran.quickSleep.QuickSleep;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -129,6 +130,14 @@ public class SleepCommand {
     private void executeSleepResets(@NotNull World world, UUID playerId){
         world.setTime(0);
         world.setStorm(false);
+        world.setThundering(false);
+
+        // Reset phantom spawn time of rest (based on config)
+        if (plugin.getConfig().getBoolean("quick_sleep.reset_phantom_time", true)){
+            for(Player p : plugin.getServer().getOnlinePlayers()){
+                p.setStatistic(Statistic.TIME_SINCE_REST, 0);
+            }
+        }
 
         // Load player's wake up message
         String playerMessage = plugin.getPlayerData().loadPlayerData(playerId).wakeupMessage();

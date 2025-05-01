@@ -1,3 +1,5 @@
 quick_sleep:
   # Default timer for countdown (in seconds)
   timer: 10
+  # Enable resetting phantom spawn timer (last time since rest)
+  reset_phantom_time: true
