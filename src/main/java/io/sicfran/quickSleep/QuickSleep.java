@@ -18,7 +18,9 @@ import java.util.UUID;
 
 public final class QuickSleep extends JavaPlugin implements Listener {
 
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.1.1";
+    public static final String DEFAULT_WAKEUP = "<b><yellow>Good morning!</yellow></b>";
+    public static final String DEFAULT_CANCEL = "<b>Boooo!!!</b>";
 
     private final PlayerDataManager playerData;
     private final Set<UUID> sleepingPlayers;
@@ -35,9 +37,11 @@ public final class QuickSleep extends JavaPlugin implements Listener {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
-        //get config and initialize saved data
+        //create config
         saveDefaultConfig();
-
+        //get missing keys due to update
+        getConfig().options().copyDefaults(true);
+        saveConfig();
 
         //initialize bstats metrics
         int pluginId = 25667;

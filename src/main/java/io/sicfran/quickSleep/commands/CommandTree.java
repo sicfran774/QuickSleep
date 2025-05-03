@@ -38,12 +38,14 @@ public class CommandTree {
                 .then(Commands.literal("message") // sleep message
                         .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_SELF))
                         .then(Commands.literal("wakeup") // sleep message wakeup
+                                .executes(ctx -> messageCommand.viewMessage(ctx, "Wake up"))
                                 .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message wakeup {message}
                                         .executes(ctx ->
                                                 messageCommand.changeMessage(ctx, "Wake up"))
                                 )
                         )
                         .then(Commands.literal("cancel") // sleep message cancel
+                                .executes(ctx -> messageCommand.viewMessage(ctx, "Cancel"))
                                 .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message cancel {message}
                                         .executes(ctx ->
                                                 messageCommand.changeMessage(ctx, "Cancel"))
@@ -52,12 +54,14 @@ public class CommandTree {
                         .then(Commands.argument("player", ArgumentTypes.player()) // sleep message {player}
                                 .requires(ctx -> ctx.getSender().hasPermission(CommandsPermissions.MESSAGE_ALL))
                                 .then(Commands.literal("wakeup") // sleep message {player} wakeup
+                                        .executes(ctx -> messageCommand.viewMessage(ctx, "Wake up"))
                                         .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message {player} wakeup {message}
                                                 .executes(ctx ->
                                                         messageCommand.changeMessage(ctx, "Wake up"))
                                         )
                                 )
                                 .then(Commands.literal("cancel") // sleep message {player} cancel
+                                        .executes(ctx -> messageCommand.viewMessage(ctx, "Cancel"))
                                         .then(Commands.argument("message", StringArgumentType.greedyString()) // sleep message {player} cancel {messsage}
                                                 .executes(ctx ->
                                                         messageCommand.changeMessage(ctx, "Cancel"))

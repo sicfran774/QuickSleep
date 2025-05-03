@@ -5,6 +5,10 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.sicfran.quickSleep.QuickSleep;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -42,10 +46,18 @@ public class SleepCommand {
                     .append(text(sender.getName(), color(0x00FFFF)))
                     .append(text(" has begun to sleep!")).build()
             );
-            final Component message =  text()
+            final Component message = text()
                     .append(text("You have "))
                     .append(text(plugin.getConfig().getInt("quick_sleep.timer", 10), color(0x32a852)))
-                    .append(text(" seconds to type "))
+                    .append(text(" seconds to "))
+                    .append(text("[click here]", color(0xff424f)).decorate(TextDecoration.UNDERLINED)
+                            .clickEvent(ClickEvent.runCommand("/sleep cancel"))
+                            .hoverEvent(HoverEvent.showText(
+                                            text("Cancel night skip countdown", color(0xff424f))
+                                    )
+                            )
+                    )
+                    .append(text(" or type "))
                     .append(text("/sleep cancel", color(0xE63E44)))
                     .append(text(" to keep it from becoming daytime."))
                     .build();
@@ -69,23 +81,24 @@ public class SleepCommand {
             plugin.clearSleepers();
 
 
-            String cancelMessage = "Booooo!!!!!";
+            String savedCancelMessage = QuickSleep.DEFAULT_CANCEL;
             // Get player data cancel message
             if(executor instanceof Player player){
-                cancelMessage = plugin.getPlayerData().loadPlayerData(player.getUniqueId()).cancelMessage();
+                savedCancelMessage = plugin.getPlayerData().loadPlayerData(player.getUniqueId()).cancelMessage();
             }
+            Component cancelMessage = MiniMessage.miniMessage().deserialize(savedCancelMessage);
 
             // Expose the canceller
             final Component message = text()
                     .append(text(sender.getName(), color(0x00FFFF)))
                     .append(text(" has cancelled the sleep. "))
-                    .append(text(cancelMessage, color(0xd000ff)))
+                    .append(cancelMessage)
                     .build();
             plugin.getServer().broadcast(message);
         } else if(executor instanceof Player player && plugin.getSleepingPlayers().contains(player.getUniqueId())){
-            sender.sendPlainMessage("You haven't confirmed the sleep.");
+            sender.sendPlainMessage("You haven't confirmed the sleep skip.");
         } else {
-            sender.sendPlainMessage("No one is sleeping...");
+            sender.sendPlainMessage("No one has started the sleep skip countdown.");
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -129,8 +142,8 @@ public class SleepCommand {
 
     private void executeSleepResets(@NotNull World world, UUID playerId){
         world.setTime(0);
-        world.setStorm(false);
-        world.setThundering(false);
+        if(plugin.getConfig().getBoolean("quick_sleep.reset_rain", true)) world.setStorm(false);
+        if(plugin.getConfig().getBoolean("quick_sleep.reset_thunderstorm", true)) world.setThundering(false);
 
         // Reset phantom spawn time of rest (based on config)
         if (plugin.getConfig().getBoolean("quick_sleep.reset_phantom_time", true)){
@@ -141,6 +154,7 @@ public class SleepCommand {
 
         // Load player's wake up message
         String playerMessage = plugin.getPlayerData().loadPlayerData(playerId).wakeupMessage();
-        plugin.getServer().broadcast(text(playerMessage, color(0xd000ff)));
+        Component message = MiniMessage.miniMessage().deserialize(playerMessage);
+        plugin.getServer().broadcast(message);
     }
 }

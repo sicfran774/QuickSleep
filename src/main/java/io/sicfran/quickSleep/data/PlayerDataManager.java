@@ -27,7 +27,6 @@ public class PlayerDataManager {
                 boolean success = playerDataFile.createNewFile();
             } catch (IOException e){
                 plugin.getLogger().severe("Failed to create player_data.yml");
-                plugin.onDisable();
             }
         }
 
@@ -46,8 +45,8 @@ public class PlayerDataManager {
 
     public PlayerData loadPlayerData(UUID playerId){
         return new PlayerData(
-                playerDataConfig.getString("players." + playerId + ".message.wakeup", "Good morning!"),
-                playerDataConfig.getString("players." + playerId + ".message.cancel", "Boooo!!!!")
+                playerDataConfig.getString("players." + playerId + ".message.wakeup", QuickSleep.DEFAULT_WAKEUP),
+                playerDataConfig.getString("players." + playerId + ".message.cancel", QuickSleep.DEFAULT_CANCEL)
         );
     }
 
@@ -56,7 +55,6 @@ public class PlayerDataManager {
             playerDataConfig.save(playerDataFile);
         } catch (IOException e){
             plugin.getLogger().severe("Failed to save player_data.yml");
-            plugin.onDisable();
         }
     }
 

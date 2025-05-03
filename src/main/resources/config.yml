@@ -3,3 +3,9 @@ quick_sleep:
   timer: 10
   # Enable resetting phantom spawn timer (last time since rest)
   reset_phantom_time: true
+  # Reset rain on night skip
+  reset_rain: true
+  # Reset thunderstorms on night skip
+  reset_thunderstorm: true
+  # Enable QuickSleep functions when alone in server
+  enable_when_alone: false
