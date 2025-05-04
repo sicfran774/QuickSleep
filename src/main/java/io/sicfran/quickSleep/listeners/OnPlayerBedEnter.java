@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,10 +24,10 @@ public class OnPlayerBedEnter implements Listener {
 
     @EventHandler
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        int playerAmount = plugin.getServer().getOnlinePlayers().size();
-        if ((playerAmount > 1 || plugin.getConfig().getBoolean("quick_sleep.enable_when_alone", false)) && event.getBedEnterResult() == PlayerBedEnterEvent.BedEnterResult.OK) {
+        Player player = event.getPlayer();
+        int playerAmountInWorld = player.getWorld().getPlayerCount();
 
-            Player player = event.getPlayer();
+        if ((playerAmountInWorld > 1 || plugin.getConfig().getBoolean("quick_sleep.enable_when_alone", false)) && event.getBedEnterResult() == PlayerBedEnterEvent.BedEnterResult.OK) {
             plugin.addSleeper(player.getUniqueId());
 
             final Component message = text()
