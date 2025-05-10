@@ -39,8 +39,10 @@ public class SleepCommand {
         if(plugin.getSleepingPlayers().isEmpty()){
             sender.sendPlainMessage("You must be in a bed to use this command.");
 
-        } else if(!(executor instanceof Player)){
+        } else if(!(executor instanceof Player)) {
             sender.sendPlainMessage("You can only use this command as a player.");
+        } else if(plugin.isSleepTimerStarted()){
+            sender.sendPlainMessage("Sleep countdown has already started.");
         } else {
             plugin.getServer().broadcast(text()
                     .append(text(sender.getName(), color(0x00FFFF)))
