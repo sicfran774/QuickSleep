@@ -6,6 +6,7 @@ import io.sicfran.quickSleep.data.PlayerDataManager;
 import io.sicfran.quickSleep.listeners.OnPlayerBedEnter;
 import io.sicfran.quickSleep.listeners.OnPlayerBedLeave;
 import io.sicfran.quickSleep.tools.Metrics;
+import io.sicfran.quickSleep.tools.Requests;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
@@ -13,12 +14,13 @@ import org.bukkit.event.Listener;
 import io.sicfran.quickSleep.commands.CommandTree;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public final class QuickSleep extends JavaPlugin implements Listener {
 
-    public static final String VERSION = "1.1.1";
+    public static final String VERSION = "1.1.2";
     public static final String DEFAULT_WAKEUP = "<b><yellow>Good morning!</yellow></b>";
     public static final String DEFAULT_CANCEL = "<b>Boooo!!!</b>";
 
@@ -57,6 +59,10 @@ public final class QuickSleep extends JavaPlugin implements Listener {
 
         //successful
         getLogger().info("QuickSleep " + VERSION + " successfully loaded!");
+
+        // Check for updates
+        List<String> messages = Requests.checkIfNewVersion(VERSION);
+        Requests.logMessages(this, messages);
     }
 
     @Override
